@@ -1,0 +1,89 @@
+/* src/App.css - COMMUNITY THEME */
+
+:root {
+  --bg-color: #0f172a; 
+  --card-bg: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --accent-color: #f43f5e;
+  --success: #10b981;
+  --beta-color: #38bdf8; /* Warna Biru buat Badge Beta */
+}
+
+body {
+  margin: 0; padding: 0; font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color); color: var(--text-primary);
+  display: flex; justify-content: center; align-items: flex-start;
+  min-height: 100vh;
+}
+
+.App { 
+  width: 100%; max-width: 700px; padding: 20px; box-sizing: border-box;
+  display: flex; flex-direction: column; align-items: center;
+}
+
+/* --- HEADER / GATE SCREEN --- */
+.centered-gate {
+    width: 100%; min-height: 80vh;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    text-align: center;
+}
+.centered-gate h1 { margin-bottom: 5px; font-size: 2.5rem; }
+.centered-gate p { margin-top: 0; color: var(--text-secondary); margin-bottom: 30px; }
+
+/* --- DASHBOARD HEADER --- */
+.dashboard-header {
+    width: 100%; background-color: var(--card-bg);
+    border: 1px solid #334155; border-radius: 12px; padding: 15px 25px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 15px; box-sizing: border-box; margin-bottom: 30px;
+}
+
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand h1 { margin: 0; font-size: 1.5rem; color: var(--accent-color); }
+
+/* BADGE BARU (BETA) */
+.vip-badge { 
+    background: rgba(56, 189, 248, 0.2); 
+    color: var(--beta-color); 
+    border: 1px solid var(--beta-color);
+    padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.7rem; 
+    letter-spacing: 1px;
+}
+
+.api-bar { display: flex; align-items: center; gap: 15px; }
+.api-edit { display: flex; gap: 5px; }
+.api-edit input { padding: 8px; border-radius: 4px; border: 1px solid #475569; background: #0f172a; color: white; width: 150px; margin: 0;}
+.api-locked { display: flex; align-items: center; gap: 10px; background: rgba(16, 185, 129, 0.1); padding: 5px 15px; border-radius: 20px; border: 1px solid var(--success); }
+.api-locked span { color: var(--success); font-weight: bold; font-size: 0.9rem; }
+
+button { cursor: pointer; border: none; border-radius: 6px; font-weight: 600; transition: all 0.2s; }
+.btn-primary { background: var(--accent-color); color: white; padding: 12px 20px; font-size: 1rem; width: 100%; margin-top: 15px;}
+.btn-small { background: var(--success); color: white; padding: 8px 15px; }
+.btn-text { background: none; color: var(--text-secondary); text-decoration: underline; padding: 0; font-size: 0.9rem;}
+.btn-text:hover { color: white; }
+.btn-action { background: var(--accent-color); color: white; padding: 14px; width: 100%; font-size: 1.1rem; margin-top: 15px;}
+.btn-action:hover { background: #e11d48; }
+
+main { width: 100%; }
+.step-box { 
+    background: var(--card-bg); padding: 30px; border-radius: 12px; border: 1px solid #334155; 
+    width: 100%; max-width: 400px; text-align: left; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+input { width: 100%; padding: 12px; background: #334155; border: 1px solid #475569; color: white; border-radius: 6px; box-sizing: border-box; margin-bottom: 0px; }
+textarea { width: 100%; padding: 15px; background: #1e293b; border: 1px solid #475569; color: white; border-radius: 8px; min-height: 150px; resize: vertical; box-sizing: border-box; font-family: inherit; font-size: 1rem; }
+
+.output-section { margin-top: 30px; text-align: left; }
+.score-box { background: rgba(244, 63, 94, 0.1); color: var(--accent-color); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; font-size: 1.2rem; margin-bottom: 20px;}
+.critique-box { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 8px; border-left: 4px solid var(--accent-color); margin-bottom: 25px; line-height: 1.6;}
+.hook-card { background: #1e293b; border: 1px solid #334155; padding: 20px; border-radius: 8px; margin-bottom: 15px; position: relative; }
+.hook-card:hover { border-color: #38bdf8; }
+.hook-badge { background: #38bdf8; color: #000; font-size: 0.75rem; padding: 3px 8px; border-radius: 10px; position: absolute; top: -10px; left: 15px; font-weight: bold; }
+.btn-mini-copy { background: rgba(255,255,255,0.1); color: #ccc; padding: 5px 10px; font-size: 0.8rem; width: auto; margin-top: 10px; }
+.btn-mini-copy:hover { background: #38bdf8; color: white; }
+
+.status-msg { margin: 15px 0 0 0; padding: 10px; border-radius: 6px; font-size: 0.9rem; text-align: center; }
+.status-msg.error { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+.status-msg.success { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+footer { margin-top: 50px; color: #64748b; font-size: 0.8rem; text-align: center; width: 100%;}
