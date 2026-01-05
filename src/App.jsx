@@ -109,12 +109,12 @@ function App() {
                 </button>
                 {statusMsg && <div className={`status-msg ${statusMsg.type}`}>{statusMsg.text}</div>}
             </div>
-            <small style={{marginTop: '20px', color: '#64748b'}}>Community Tools 2026</small>
+            <small style={{marginTop: '20px', color: '#64748b'}}>@2024-2026 Revolusi Digital</small>
           </header>
       ) : (
           <>
             <header className="dashboard-header">
-                <div className="brand"><h1>🪝 Hook Doctor</h1><span className="vip-badge">BETA</span></div>
+                <div className="brand"><h1>🪝 Hook Doctor</h1><span className="vip-badge">FREE</span></div>
                 <div className="api-bar">
                     {!isKeySaved ? (
                         <div className="api-edit"><input type="password" placeholder="Gemini Key..." value={apiKey} onChange={(e) => setApiKey(e.target.value)} /><button className="btn-small" onClick={handleSaveKey}>Simpan</button></div>
