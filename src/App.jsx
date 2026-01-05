@@ -1,11 +1,11 @@
-// src/App.jsx - VERSI FRONTEND ONLY (ANTI ERROR)
+// src/App.jsx - VERSI FINAL FRONTEND ONLY (NO SERVER)
 import React, { useState, useEffect } from 'react';
-import { GoogleGenerativeAI } from "@google/generative-ai"; // Kita panggil langsung di sini
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import './App.css';
 
 function App() {
-  // --- SETTINGAN ---
-  const APP_PASSWORD = "GRATISAN_COK"; // Password Hardcode di Frontend
+  // --- PASSWORD HARDCODE DI SINI ---
+  const APP_PASSWORD = "GRATISAN_COK"; 
   
   const [accessCode, setAccessCode] = useState('');
   const [apiKey, setApiKey] = useState('');
@@ -21,7 +21,7 @@ function App() {
     const savedCode = localStorage.getItem('app_access_code');
     const savedKey = localStorage.getItem('gemini_api_key');
 
-    // Cek Password Sederhana
+    // Cek otomatis pas loading
     if (savedCode === APP_PASSWORD) {
         setAccessCode(savedCode);
         setIsLicenseVerified(true); 
@@ -32,20 +32,23 @@ function App() {
     }
   }, []);
 
-  // 1. CEK LICENSE (LANGSUNG DI BROWSER)
+  // 1. CEK LICENSE (LOGIKA LOKAL - TANPA FETCH)
   const handleVerifyLicense = () => {
     setIsLoading(true);
-    // Kita cek langsung di sini, gak usah nembak server
-    if (accessCode === APP_PASSWORD) {
+    setStatusMsg(null);
+    
+    // Cek langsung string-nya sama atau gak
+    if (accessCode.trim() === APP_PASSWORD) {
         localStorage.setItem('app_access_code', accessCode);
         setIsLicenseVerified(true);
         setStatusMsg(null);
     } else {
-        setStatusMsg({type: 'error', text: '⛔ Kode Salah Bro!'});
+        setStatusMsg({type: 'error', text: '⛔ Kode Salah Bro! Coba lagi.'});
     }
     setIsLoading(false);
   };
 
+  // 2. SIMPAN KEY
   const handleSaveKey = () => {
       if (!apiKey) return;
       localStorage.setItem('gemini_api_key', apiKey);
@@ -62,7 +65,7 @@ function App() {
       setAccessCode('');
   };
 
-  // 2. ANALISA SCRIPT (LANGSUNG PANGGIL GEMINI)
+  // 3. ANALISA SCRIPT (LANGSUNG KE GEMINI - TANPA SERVER SENDIRI)
   const handleAnalyze = async () => {
     if (!apiKey) { setStatusMsg({type: 'error', text: 'API Key belum disimpen!'}); return; }
     if (!script) { setStatusMsg({type: 'error', text: 'Scriptnya kosong!'}); return; }
@@ -70,7 +73,7 @@ function App() {
     setIsLoading(true); setAnalysis(null); setStatusMsg(null);
     
     try {
-      // Panggil Gemini Langsung dari Browser
+      // Panggil Library Google Langsung
       const genAI = new GoogleGenerativeAI(apiKey);
       const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
@@ -89,7 +92,7 @@ function App() {
 
     } catch (err) { 
         console.error(err);
-        setStatusMsg({type: 'error', text: "Gagal: Cek API Key Gemini lo!"}); 
+        setStatusMsg({type: 'error', text: "Gagal: API Key Gemini lo salah atau kuota habis!"}); 
     } finally { setIsLoading(false); }
   };
 
@@ -106,12 +109,12 @@ function App() {
                 </button>
                 {statusMsg && <div className={`status-msg ${statusMsg.type}`}>{statusMsg.text}</div>}
             </div>
-            <small style={{marginTop: '20px', color: '#64748b'}}>@2024-2025 Revolusi Digital</small>
+            <small style={{marginTop: '20px', color: '#64748b'}}>Community Tools 2026</small>
           </header>
       ) : (
           <>
             <header className="dashboard-header">
-                <div className="brand"><h1>🪝 Hook Doctor</h1><span className="vip-badge">FREE</span></div>
+                <div className="brand"><h1>🪝 Hook Doctor</h1><span className="vip-badge">BETA</span></div>
                 <div className="api-bar">
                     {!isKeySaved ? (
                         <div className="api-edit"><input type="password" placeholder="Gemini Key..." value={apiKey} onChange={(e) => setApiKey(e.target.value)} /><button className="btn-small" onClick={handleSaveKey}>Simpan</button></div>
