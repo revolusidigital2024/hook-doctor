@@ -8,7 +8,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const app = express();
 
 // Password Rahasia (Nanti set di Vercel: APP_PASSWORD)
-const APP_PASSWORD = process.env.APP_PASSWORD || "GRATISAN_COK"; 
+const APP_PASSWORD = "GRATISAN_COK";
 
 app.use(cors()); // Di Vercel gak perlu setting origin ketat
 app.use(express.json());
