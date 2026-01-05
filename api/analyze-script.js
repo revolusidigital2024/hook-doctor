@@ -1,33 +1,19 @@
-// api/index.js - FINAL FIX ROUTING
+// api/analyze-script.js
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const app = express();
+const APP_PASSWORD = "GRATISAN_COK"; // Password yang sama
 
-// HARDCODE PASSWORD
-const APP_PASSWORD = "GRATISAN_COK"; 
-
-app.use(cors()); 
+app.use(cors());
 app.use(express.json());
 
-// --- ROUTES ---
-
-// 1. TAMBAHIN LAGI '/api' DI DEPANNYA (INI KUNCINYA!)
-app.post('/api/verify-license', (req, res) => {
-    const { accessCode } = req.body;
-    if (accessCode && accessCode.trim() === APP_PASSWORD) {
-        res.json({ success: true });
-    } else {
-        res.status(403).json({ error: "⛔ Kode Salah!" });
-    }
-});
-
-// 2. ANALYZE JUGA TAMBAHIN '/api'
-app.post('/api/analyze-script', async (req, res) => {
+app.post('/', async (req, res) => {
     const { script, apiKey, accessCode } = req.body;
 
+    // Cek Password lagi biar aman
     if (!accessCode || accessCode.trim() !== APP_PASSWORD) {
         return res.status(403).json({ error: '⛔ Akses Ditolak.' });
     }
@@ -35,7 +21,7 @@ app.post('/api/analyze-script', async (req, res) => {
 
     try {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         const prompt = `
         Peran: "The Hook Doctor". Intro User: "${script}".
@@ -52,11 +38,6 @@ app.post('/api/analyze-script', async (req, res) => {
         console.error(error);
         res.status(500).json({ error: 'Gagal. Cek API Key Gemini lo.' });
     }
-});
-
-// 3. DEBUGGING ROUTE (Biar tau kalau server nyala)
-app.get('/api', (req, res) => {
-    res.send("Server Nyala Bos! Masuk lewat Frontend ya.");
 });
 
 module.exports = app;
