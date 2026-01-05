@@ -1,10 +1,9 @@
-// src/App.jsx - VERSI FINAL FRONTEND ONLY (NO SERVER)
+// src/App.jsx - GEMINI 3 FLASH EDITION
 import React, { useState, useEffect } from 'react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import './App.css';
 
 function App() {
-  // --- PASSWORD HARDCODE DI SINI ---
   const APP_PASSWORD = "GRATISAN_COK"; 
   
   const [accessCode, setAccessCode] = useState('');
@@ -20,62 +19,46 @@ function App() {
   useEffect(() => {
     const savedCode = localStorage.getItem('app_access_code');
     const savedKey = localStorage.getItem('gemini_api_key');
-
-    // Cek otomatis pas loading
-    if (savedCode === APP_PASSWORD) {
-        setAccessCode(savedCode);
-        setIsLicenseVerified(true); 
-    }
-    if (savedKey) {
-        setApiKey(savedKey);
-        setIsKeySaved(true);
-    }
+    if (savedCode === APP_PASSWORD) { setAccessCode(savedCode); setIsLicenseVerified(true); }
+    if (savedKey) { setApiKey(savedKey); setIsKeySaved(true); }
   }, []);
 
-  // 1. CEK LICENSE (LOGIKA LOKAL - TANPA FETCH)
   const handleVerifyLicense = () => {
     setIsLoading(true);
-    setStatusMsg(null);
-    
-    // Cek langsung string-nya sama atau gak
     if (accessCode.trim() === APP_PASSWORD) {
         localStorage.setItem('app_access_code', accessCode);
         setIsLicenseVerified(true);
         setStatusMsg(null);
     } else {
-        setStatusMsg({type: 'error', text: '⛔ Kode Salah Bro! Coba lagi.'});
+        setStatusMsg({type: 'error', text: '⛔ Kode Salah Bro!'});
     }
     setIsLoading(false);
   };
 
-  // 2. SIMPAN KEY
   const handleSaveKey = () => {
-      if (!apiKey) return;
       localStorage.setItem('gemini_api_key', apiKey);
       setIsKeySaved(true);
-      setStatusMsg({type: 'success', text: 'Siap digunakan!'});
+      setStatusMsg({type: 'success', text: 'Key Gemini 3 Ready!'});
       setTimeout(() => setStatusMsg(null), 2000);
   };
 
   const handleChangeKey = () => { setIsKeySaved(false); };
+  const handleLogout = () => { localStorage.clear(); location.reload(); };
 
-  const handleLogout = () => {
-      localStorage.removeItem('app_access_code');
-      setIsLicenseVerified(false);
-      setAccessCode('');
-  };
-
-  // 3. ANALISA SCRIPT (LANGSUNG KE GEMINI - TANPA SERVER SENDIRI)
   const handleAnalyze = async () => {
-    if (!apiKey) { setStatusMsg({type: 'error', text: 'API Key belum disimpen!'}); return; }
-    if (!script) { setStatusMsg({type: 'error', text: 'Scriptnya kosong!'}); return; }
+    if (!apiKey) { setStatusMsg({type: 'error', text: 'API Key kosong!'}); return; }
+    if (!script) { setStatusMsg({type: 'error', text: 'Script kosong!'}); return; }
     
     setIsLoading(true); setAnalysis(null); setStatusMsg(null);
     
     try {
-      // Panggil Library Google Langsung
       const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+      
+      // 🔥 UPDATE: PAKE JALUR BETA BUAT GEMINI 3 🔥
+      const model = genAI.getGenerativeModel({ 
+          model: "gemini-3-flash-preview", 
+          apiVersion: "v1beta" // INI KUNCINYA
+      });
 
       const prompt = `
       Peran: "The Hook Doctor" (Produser YouTube Savage).
@@ -91,8 +74,12 @@ function App() {
       setAnalysis(JSON.parse(text));
 
     } catch (err) { 
-        console.error(err);
-        setStatusMsg({type: 'error', text: "Gagal: API Key Gemini lo salah atau kuota habis!"}); 
+        console.error("Gemini Error:", err);
+        // Tampilkan pesan error detail
+        let msg = "Gagal. ";
+        if (err.message.includes("404")) msg += "Model belum tersedia buat API Key lo (Coba ganti ke gemini-1.5-flash dulu).";
+        else msg += "Cek API Key atau Kuota.";
+        setStatusMsg({type: 'error', text: msg}); 
     } finally { setIsLoading(false); }
   };
 
@@ -104,9 +91,7 @@ function App() {
             <p>Masukkan Kode Akses Gratis</p>
             <div className="step-box">
                 <input type="text" placeholder="Kode Akses..." value={accessCode} onChange={(e) => setAccessCode(e.target.value)} />
-                <button className="btn-primary" onClick={handleVerifyLicense} disabled={isLoading}>
-                    {isLoading ? '...' : 'Masuk 🚀'}
-                </button>
+                <button className="btn-primary" onClick={handleVerifyLicense}>{isLoading ? '...' : 'Masuk 🚀'}</button>
                 {statusMsg && <div className={`status-msg ${statusMsg.type}`}>{statusMsg.text}</div>}
             </div>
             <small style={{marginTop: '20px', color: '#64748b'}}>@2024-2026 Revolusi Digital</small>
@@ -114,12 +99,12 @@ function App() {
       ) : (
           <>
             <header className="dashboard-header">
-                <div className="brand"><h1>🪝 Hook Doctor</h1><span className="vip-badge">FREE</span></div>
+                <div className="brand"><h1>🪝 Hook Doctor</h1><span className="vip-badge">GEMINI 3</span></div>
                 <div className="api-bar">
                     {!isKeySaved ? (
                         <div className="api-edit"><input type="password" placeholder="Gemini Key..." value={apiKey} onChange={(e) => setApiKey(e.target.value)} /><button className="btn-small" onClick={handleSaveKey}>Simpan</button></div>
                     ) : (
-                        <div className="api-locked"><span>✅ API Key Ready</span><button className="btn-text" onClick={handleChangeKey}>Ubah</button></div>
+                        <div className="api-locked"><span>✅ Key Ready</span><button className="btn-text" onClick={handleChangeKey}>Ubah</button></div>
                     )}
                     <button className="btn-text logout" onClick={handleLogout}>Keluar</button>
                 </div>
@@ -129,7 +114,7 @@ function App() {
                 <section className="input-section">
                     <h2>Drop Intro Lo 👇</h2>
                     <textarea placeholder="Contoh: Stop scrolling..." value={script} onChange={(e) => setScript(e.target.value)}></textarea>
-                    <button className="btn-action" onClick={handleAnalyze} disabled={isLoading}>{isLoading ? '...' : 'Bedah Hook Gue! 🚀'}</button>
+                    <button className="btn-action" onClick={handleAnalyze} disabled={isLoading}>{isLoading ? '...' : 'Bedah Hook (Gemini 3) 🚀'}</button>
                 </section>
                 {analysis && (
                 <section className="output-section">
