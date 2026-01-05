@@ -1,4 +1,4 @@
-// api/index.js - VERCEL COMPATIBLE VERSION
+// api/index.js - FINAL FIX ROUTING
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -6,18 +6,17 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const app = express();
 
-// HARDCODE PASSWORD BIAR 100% AMAN (Gak usah pusing env var dulu)
+// HARDCODE PASSWORD
 const APP_PASSWORD = "GRATISAN_COK"; 
 
 app.use(cors()); 
 app.use(express.json());
 
-// --- ROUTES (Tanpa awalan /api karena udah di-handle vercel.json) ---
+// --- ROUTES ---
 
-// 1. CEK LICENSE
-app.post('/verify-license', (req, res) => {
+// 1. TAMBAHIN LAGI '/api' DI DEPANNYA (INI KUNCINYA!)
+app.post('/api/verify-license', (req, res) => {
     const { accessCode } = req.body;
-    // Pake trim() biar spasi gak sengaja kehapus
     if (accessCode && accessCode.trim() === APP_PASSWORD) {
         res.json({ success: true });
     } else {
@@ -25,8 +24,8 @@ app.post('/verify-license', (req, res) => {
     }
 });
 
-// 2. CEK SCRIPT (ANALISA)
-app.post('/analyze-script', async (req, res) => {
+// 2. ANALYZE JUGA TAMBAHIN '/api'
+app.post('/api/analyze-script', async (req, res) => {
     const { script, apiKey, accessCode } = req.body;
 
     if (!accessCode || accessCode.trim() !== APP_PASSWORD) {
@@ -36,12 +35,11 @@ app.post('/analyze-script', async (req, res) => {
 
     try {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
         const prompt = `
-        Peran: "The Hook Doctor" (Produser YouTube Savage).
-        Intro User: "${script}"
-        Instruksi: Pake Bahasa Gaul (Lo/Gue). ROASTING pedas kalau jelek.
+        Peran: "The Hook Doctor". Intro User: "${script}".
+        Instruksi: Pake Bahasa Gaul. ROASTING pedas.
         Output JSON: {"score": number, "critique": string, "better_hooks": ["Hook 1", "Hook 2", "Hook 3"]}
         `;
 
@@ -56,10 +54,9 @@ app.post('/analyze-script', async (req, res) => {
     }
 });
 
-// 3. ROOT CHECK (Buat ngetes kalau dibuka langsung)
-app.get('/', (req, res) => {
-    res.send("Backend Server is Running! 🔥");
+// 3. DEBUGGING ROUTE (Biar tau kalau server nyala)
+app.get('/api', (req, res) => {
+    res.send("Server Nyala Bos! Masuk lewat Frontend ya.");
 });
 
-// WAJIB BUAT VERCEL
 module.exports = app;
