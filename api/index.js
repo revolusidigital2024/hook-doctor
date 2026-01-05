@@ -1,5 +1,4 @@
-// api/index.js
-// INI BACKEND VERSI VERCEL (Serverless)
+// api/index.js - VERCEL COMPATIBLE VERSION
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -7,32 +6,37 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const app = express();
 
-// Password Rahasia (Nanti set di Vercel: APP_PASSWORD)
-const APP_PASSWORD = "GRATISAN_COK";
+// HARDCODE PASSWORD BIAR 100% AMAN (Gak usah pusing env var dulu)
+const APP_PASSWORD = "GRATISAN_COK"; 
 
-app.use(cors()); // Di Vercel gak perlu setting origin ketat
+app.use(cors()); 
 app.use(express.json());
 
-// --- 1. CEK LICENSE ---
-app.post('/api/verify-license', (req, res) => {
+// --- ROUTES (Tanpa awalan /api karena udah di-handle vercel.json) ---
+
+// 1. CEK LICENSE
+app.post('/verify-license', (req, res) => {
     const { accessCode } = req.body;
-    if (accessCode === APP_PASSWORD) {
+    // Pake trim() biar spasi gak sengaja kehapus
+    if (accessCode && accessCode.trim() === APP_PASSWORD) {
         res.json({ success: true });
     } else {
         res.status(403).json({ error: "⛔ Kode Salah!" });
     }
 });
 
-// --- 2. CEK LICENSE + KEY ---
-app.post('/api/analyze-script', async (req, res) => {
+// 2. CEK SCRIPT (ANALISA)
+app.post('/analyze-script', async (req, res) => {
     const { script, apiKey, accessCode } = req.body;
 
-    if (accessCode !== APP_PASSWORD) return res.status(403).json({ error: '⛔ Akses Ditolak.' });
+    if (!accessCode || accessCode.trim() !== APP_PASSWORD) {
+        return res.status(403).json({ error: '⛔ Akses Ditolak.' });
+    }
     if (!script) return res.status(400).json({ error: 'Script kosong!' });
 
     try {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Pake 1.5 Flash biar stabil di Vercel
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         const prompt = `
         Peran: "The Hook Doctor" (Produser YouTube Savage).
@@ -52,5 +56,10 @@ app.post('/api/analyze-script', async (req, res) => {
     }
 });
 
-// PENTING BUAT VERCEL:
+// 3. ROOT CHECK (Buat ngetes kalau dibuka langsung)
+app.get('/', (req, res) => {
+    res.send("Backend Server is Running! 🔥");
+});
+
+// WAJIB BUAT VERCEL
 module.exports = app;
