@@ -1,23 +1,31 @@
 // api/analyze-script.js
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const app = express();
-const APP_PASSWORD = "GRATISAN_COK"; // Password yang sama
+export default async function handler(req, res) {
+    // 1. Setting CORS Manual
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+    res.setHeader(
+        'Access-Control-Allow-Headers',
+        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+    );
 
-app.use(cors());
-app.use(express.json());
+    if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
+    }
 
-app.post('/', async (req, res) => {
+    // 2. Logic Utama
+    const APP_PASSWORD = "GRATISAN_COK";
     const { script, apiKey, accessCode } = req.body;
 
-    // Cek Password lagi biar aman
     if (!accessCode || accessCode.trim() !== APP_PASSWORD) {
         return res.status(403).json({ error: '⛔ Akses Ditolak.' });
     }
-    if (!script) return res.status(400).json({ error: 'Script kosong!' });
+    if (!script) {
+        return res.status(400).json({ error: 'Script kosong!' });
+    }
 
     try {
         const genAI = new GoogleGenerativeAI(apiKey);
@@ -32,12 +40,11 @@ app.post('/', async (req, res) => {
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text().replace(/```json/g, "").replace(/```/g, "").trim();
-        res.json(JSON.parse(text));
+        
+        return res.status(200).json(JSON.parse(text));
 
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Gagal. Cek API Key Gemini lo.' });
+        console.error("Gemini Error:", error);
+        return res.status(500).json({ error: 'Gagal. Cek API Key Gemini lo.' });
     }
-});
-
-module.exports = app;
+}

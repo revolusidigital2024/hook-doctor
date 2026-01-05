@@ -1,21 +1,29 @@
 // api/verify-license.js
-const express = require('express');
-const cors = require('cors');
-const app = express();
+// VERSI MURNI VERCEL (TANPA EXPRESS)
 
-const APP_PASSWORD = "GRATISAN_COK"; // Hardcode Password
+export default function handler(req, res) {
+    // 1. Setting CORS Manual (Biar frontend bisa masuk)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+    res.setHeader(
+        'Access-Control-Allow-Headers',
+        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+    );
 
-app.use(cors());
-app.use(express.json());
-
-// Pake tanda '/' artinya nangkep request yang masuk ke file ini
-app.post('/', (req, res) => {
-    const { accessCode } = req.body;
-    if (accessCode && accessCode.trim() === APP_PASSWORD) {
-        res.json({ success: true });
-    } else {
-        res.status(403).json({ error: "⛔ Kode Salah!" });
+    // 2. Handle Preflight Request (Browser nanya izin)
+    if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
     }
-});
 
-module.exports = app;
+    // 3. Logic Password
+    const APP_PASSWORD = "GRATISAN_COK";
+    const { accessCode } = req.body;
+
+    if (accessCode && accessCode.trim() === APP_PASSWORD) {
+        return res.status(200).json({ success: true });
+    } else {
+        return res.status(403).json({ error: "⛔ Kode Salah!" });
+    }
+}
